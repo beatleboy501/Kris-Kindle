@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { AppRegistry, View, StyleSheet, Text } from 'react-native';
 import Button from './Button.js';
-import HelloWorld from './HelloWorld'
+import FamilyMembersScreen from './FamilyMembersScreen'
+import SavedListsScreen from './SavedListsScreen'
+import GenerateListScreen from './GenerateListScreen'
 
 export default class HomeScreen extends Component {
 
@@ -21,11 +23,9 @@ export default class HomeScreen extends Component {
 
   render() {
     const btns = [
-      {label: 'Get a Randomly Sorted List', index: 0, key:'getList', onPress: () => this._navigate(HelloWorld, 'RandomList')},
-      {label: 'See Saved Lists', index: 1, key:'seeLists', onPress: () => this._navigate(HelloWorld, 'SavedLists')},
-      {label: 'See List of Family Members', index: 2, key:'seeFamily', onPress:() => this._navigate(HelloWorld, 'MemberList')},
-      {label: 'Add a Family Member', index: 3, key:'addMember', onPress:() => this._navigate(HelloWorld, 'AddMember')},
-      {label: 'Remove a Family Member', index: 4, key:'removeMember', onPress:() => this._navigate(HelloWorld, 'RemoveMember')}
+      {label: 'Start a New Draw', index: 0, key:'getList', onPress: () => this._navigate(GenerateListScreen, 'RandomList')},
+      {label: 'See Saved Draws', index: 1, key:'seeLists', onPress: () => this._navigate(SavedListsScreen, 'SavedLists')},
+      {label: 'See Family Members', index: 2, key:'seeFamily', onPress:() => this._navigate(FamilyMembersScreen, 'MemberList')}
     ];
     let buttonList = [];
     for (var btn of btns) {
@@ -34,7 +34,7 @@ export default class HomeScreen extends Component {
     return (
         <View style={styles.container}>
           <Text>Kris Kindle App</Text>
-          <Text>Please select an option below</Text>
+          <Text>Select an option below</Text>
           {buttonList}
         </View>
     );
