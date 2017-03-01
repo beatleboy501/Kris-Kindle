@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Navigator, AppRegistry, View, StyleSheet, Text, TouchableHighlight} from 'react-native';
-import HomeScreen from './HomeScreen.js';
-import HelloWorld from './HelloWorld.js';
+import FamilyMembersScreen from './FamilyMembersScreen.js';
 import Button from './Button.js';
 
-export default class Home extends Component {
+export default class Family extends Component {
   constructor(props){
     super(props);
     this.configureScene = this.configureScene.bind(this);
@@ -29,6 +28,7 @@ export default class Home extends Component {
           return(
             <Button
                 label="Back"
+                style={{backgroundColor: 'white',verticalAlign: 'bottom', flex: 1, justifyContent: 'center', alignItems: 'center'}}
                 onPress={() => { if (index > 0) { navigator.pop() } }}>
             </Button>
           )
@@ -44,7 +44,7 @@ export default class Home extends Component {
         )
       },
       Title(route, navigator, index, navState) {
-        return <Text style={styles.title}>Kris Kindle</Text>
+        return <Text style={styles.title}>Family</Text>
       }
     };
 
@@ -52,7 +52,7 @@ export default class Home extends Component {
         <Navigator
             configureScene={ this.configureScene }
             style={{ flex:1 }}
-            initialRoute={{ component: HomeScreen, name: 'HomeScreen' }}
+            initialRoute={{ component: FamilyMembersScreen, name: 'FamilyMembersScreen' }}
             navigationBar={
               <Navigator.NavigationBar
                 style={ styles.nav }
@@ -65,9 +65,7 @@ export default class Home extends Component {
 }
 
 const styles = StyleSheet.create({
-  nav:{},
-  leftNavButtonText:{},
   title:{}
 });
 
-AppRegistry.registerComponent('Home', () => Home);
+AppRegistry.registerComponent('Home', () => Family);

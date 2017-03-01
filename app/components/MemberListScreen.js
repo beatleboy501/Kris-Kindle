@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { AppRegistry, View, StyleSheet, Text } from 'react-native';
-import ListViewComponent from './ListViewComponent'
 
-export default class SavedListsScreen extends Component {
+export default class MemberListScreen extends Component {
   constructor(props) {
     super(props)
   }
 
   render(){
     return(
-          <ListViewComponent></ListViewComponent>
+        <View style={styles.container}>
+          <Text>MemberListScreen</Text>
+        </View>
     )
   }
 }
@@ -22,4 +23,4 @@ const styles = StyleSheet.create({
   }
 });
 
-AppRegistry.registerComponent('SavedListsScreen', () => SavedListsScreen);
+AppRegistry.registerComponent('MemberListScreen', () => MemberListScreen);
