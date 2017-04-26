@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff0000'
   },
   tabLabel:{
-    backgroundColor: '#006600'
+    backgroundColor: '#34A853'
   }
 });
 
@@ -28,10 +28,10 @@ export default class Main extends Component {
   };
 
   get_routes() {
-    var admin = true; // will have to get this from user login later
+    var admin = false; // will have to get this from user login later
     var routes = [
       { key: '1', title: 'View Draw' },
-      { key: '2', title: 'Family' }
+      { key: '2', title: 'View Family' }
     ];
     if(admin){
       routes.push({

@@ -5,24 +5,39 @@ import Icon from '../../../node_modules/react-native-vector-icons/FontAwesome';
 import LoginContainer from './LoginContainer.js'
 import LoginButton from './LoginButton.js'
 import LoginLabel from './LoginLabel.js'
+import Main from '../Main.js'
 
 export default class Login extends Component {
   constructor(props) {
     super(props);
     this.handleLogin = this.handleLogin.bind(this);
     this.handleRegister = this.handleRegister.bind(this);
+    this.handleIsRegistering = this.handleIsRegistering.bind(this);
     this.state = {
       email: '',
       password: '',
-      register: false
+      isRegistering: false,
+      isLoggedIn: false
     }
   }
 
   handleLogin(e) {
     let email = this.state.email;
     let password = this.state.password;
+
     console.warn(email);
     console.warn(password);
+
+    this.setState({
+      isLoggedIn: true
+    })
+  }
+
+  handleIsRegistering(e){
+    console.warn('is registering');
+    this.setState({
+      isRegistering: true
+    })
   }
 
   handleRegister(e) {
@@ -33,15 +48,15 @@ export default class Login extends Component {
     //execute any code here
   }
 
-  render() {
-    return (
+  renderRegister() {
+    return(
         <ScrollView style={styles.scroll}>
           <Text style={styles.header}>Kris Kindle<Image style={{width: 29, height: 36}} source={require('./cane.png')}/></Text>
           <LoginContainer>
             <LoginLabel text="Email"/>
             <TextInput
                 style={styles.textInput}
-                ref= {(el) => { this.email = el; }}
+                ref={(el) => { this.email = el; }}
                 onChangeText={(email) => this.setState({email})}
                 value={this.state.email}
             />
@@ -51,7 +66,40 @@ export default class Login extends Component {
             <TextInput
                 secureTextEntry={true}
                 style={styles.textInput}
-                ref= {(el) => { this.password = el; }}
+                ref={(el) => { this.password = el; }}
+                onChangeText={(password) => this.setState({password})}
+                value={this.state.password}
+            />
+          </LoginContainer>
+          <LoginContainer>
+            <LoginButton
+                label="Register"
+                styles={{button: styles.primaryButton, label: styles.buttonWhiteText}}
+                onPress={this.handleRegister}/>
+          </LoginContainer>
+        </ScrollView>
+    );
+  }
+
+  renderLogin() {
+    return (
+        <ScrollView style={styles.scroll}>
+          <Text style={styles.header}>Kris Kindle<Image style={{width: 29, height: 36}} source={require('./cane.png')}/></Text>
+          <LoginContainer>
+            <LoginLabel text="Email"/>
+            <TextInput
+                style={styles.textInput}
+                ref={(el) => { this.email = el; }}
+                onChangeText={(email) => this.setState({email})}
+                value={this.state.email}
+            />
+          </LoginContainer>
+          <LoginContainer>
+            <LoginLabel text="Password"/>
+            <TextInput
+                secureTextEntry={true}
+                style={styles.textInput}
+                ref={(el) => { this.password = el; }}
                 onChangeText={(password) => this.setState({password})}
                 value={this.state.password}
             />
@@ -78,7 +126,7 @@ export default class Login extends Component {
               <LoginButton
                   label="Register Here"
                   styles={{label: styles.buttonBlackText}}
-                  onPress={this.handleRegister}/>
+                  onPress={this.handleIsRegistering}/>
             </LoginContainer>
             <LoginContainer>
               <LoginButton
@@ -89,6 +137,16 @@ export default class Login extends Component {
           </View>
         </ScrollView>
     )
+  }
+
+  render() {
+    if(this.state.isLoggedIn){
+      return <Main></Main>
+    } else if(this.state.isRegistering){
+      return this.renderRegister();
+    } else {
+      return this.renderLogin();
+    }
   }
 }
 

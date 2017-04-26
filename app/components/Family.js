@@ -44,14 +44,14 @@ export default class Family extends Component {
         )
       },
       Title(route, navigator, index, navState) {
-        return <Text style={styles.title}>Family</Text>
+        return <Text style={styles.title}></Text>
       }
     };
 
     return (
         <Navigator
             configureScene={ this.configureScene }
-            style={{ flex:1 }}
+            style={styles.navigator}
             initialRoute={{ component: FamilyMembersScreen, name: 'FamilyMembersScreen' }}
             navigationBar={
               <Navigator.NavigationBar
@@ -65,7 +65,11 @@ export default class Family extends Component {
 }
 
 const styles = StyleSheet.create({
-  title:{}
+  title:{},
+  navigator:{
+    flex: 1,
+    backgroundColor: 'white'
+  }
 });
 
 AppRegistry.registerComponent('Home', () => Family);

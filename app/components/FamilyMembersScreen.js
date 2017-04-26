@@ -23,9 +23,9 @@ export default class FamilyMembersScreen extends Component {
 
   render(){
     const btns = [
-      {label: 'See Current List', index: 0, key:'getMemberList', onPress: () => this._navigate(MemberListScreen, 'MemberList')},
-      {label: 'Add', index: 1, key:'Add', onPress: () => this._navigate(AddMemberScreen, 'AddMember')},
-      {label: 'Remove', index: 2, key:'Remove', onPress:() => this._navigate(RemoveMemberScreen, 'RemoveMember')}
+      {label: 'See the Entire Hickey List', index: 0, key:'getMemberList', onPress: () => this._navigate(MemberListScreen, 'MemberList')},
+      {label: 'Add a New Member of the Family', index: 1, key:'Add', onPress: () => this._navigate(AddMemberScreen, 'AddMember')},
+      {label: 'Remove Someone...', index: 2, key:'Remove', onPress:() => this._navigate(RemoveMemberScreen, 'RemoveMember')}
     ];
     let buttonList = [];
     for (var btn of btns) {
@@ -33,7 +33,6 @@ export default class FamilyMembersScreen extends Component {
     }
     return(
         <View style={styles.container}>
-          <Text>Family Members Screen</Text>
           {buttonList}
         </View>
     )
@@ -41,10 +40,9 @@ export default class FamilyMembersScreen extends Component {
 }
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
+    marginTop: 100,
     alignItems: 'center',
-    backgroundColor: '#F5FCFF'
+    backgroundColor: 'white'
   }
 });
 

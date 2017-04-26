@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#8E8E8E',
-  },
+  }
 });
 
 export default class ListViewComponent extends Component {
@@ -23,12 +23,13 @@ export default class ListViewComponent extends Component {
       dataSource: ds.cloneWithRows([
         {
           picture: {
-            large: 'http://beatleboy501.com/img/me.jpg'
+            large: './login/cane.jpg'
           },
           name: {
             first: "Andrew",
             last: "Allison"
-          }
+          },
+          recipient: 'Nanny Hickey'
         },
         {
           picture: {
@@ -37,7 +38,8 @@ export default class ListViewComponent extends Component {
           name: {
             first: "Nanny",
             last: "Hickey"
-          }
+          },
+          recipient: 'Andrew Allison'
         }
       ]),
     };
