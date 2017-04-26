@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "start": "node server.js && react-native run-ios",
     "test": "jest"
   },
   "dependencies": {
@@ -11,7 +11,7 @@
     "react-native": "^0.41.2",
     "react-native-form-generator": "^0.9.9",
     "react-native-tab-view": "0.0.56",
-    "react-native-vector-icons": "^4.0.0"
+    "react-native-vector-icons": "^4.0.1"
   },
   "devDependencies": {
     "babel-jest": "18.0.0",
@@ -22,5 +22,22 @@
   },
   "jest": {
     "preset": "react-native"
-  }
+  },
+  "description": "Christmas present raffle app",
+  "main": "index.android.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beatleboy501/Kris-Kindle.git"
+  },
+  "keywords": [
+    "kris",
+    "kindle",
+    "christmas"
+  ],
+  "author": "beatleboy501",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/beatleboy501/Kris-Kindle/issues"
+  },
+  "homepage": "https://github.com/beatleboy501/Kris-Kindle#readme"
 }
