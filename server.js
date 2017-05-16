@@ -19,10 +19,13 @@ var unirest = require('unirest');
 var jwt = require('jsonwebtoken');
 /** The app configuration */
 var config = require('./config');
-/** The User model */
-var User = require('./app/models/user');
 /** The port used. Default is 8080 */
 var port = process.env.PORT || 8080;
+/** Our Models */
+var Family = require('./app/models/family');
+var Member = require('./app/models/member');
+var Draw = require('./app/models/draw');
+var Match = require('./app/models/match');
 
 mongoose.connect(config.database);
 
@@ -36,106 +39,344 @@ app.use('/app/assets/javascripts', express.static('app/assets/javascripts'));
 
 /** API routes */
 
-/**
- * @name  <b> /authenticate </b> - The authenticate route will take the username/password entered and scan the database for an entry.
- * If successful it will return an auth token good for 24 hours.
- * apiRoutes.post
- * @function
- * @param {Object} req - the request which includes a JSON body with username/password
- * @param {Object} res - the response object containing status, message, and success boolean
- */
-apiRoutes.post('/authenticate', function (req, res) {
-  User.findOne({
-    username: req.body.username
-  }, function (err, user) {
+apiRoutes.get('/family', function(req, res){
+  Family.find({}, function (err, families) {
+    res.json(families);
+  });
+});
+
+apiRoutes.get('/family/:id', function (req, res) {
+  Family.findOne({
+    id: req.query.id
+  }, function (err, family) {
     if (err) throw err;
-    if (!user) {
-      res.status(400).send({success: false, message: 'Authentication failed. User not found.'});
-    } else if (user) {
-      if (user.password != req.body.password) {
-        res.json({success: false, message: 'Authentication failed. Wrong password.'});
-      } else {
-        var token = jwt.sign(user, app.get('superSecret'), {
-          expiresIn: 1440 // expires in 24 hours
-        });
-        res.json({
-          success: true,
-          message: 'Enjoy your token!',
-          token: token
-        });
-      }
+    if (!family) {
+      res.status(404).send({success: false, message: 'Family not found.'});
+    } else if (family) {
+      res.json(family);
     }
   });
 });
 
-/**
- * @name <b> /create </b> - The create route will create a user with the username/password entered and save to the database.
- * apiRoutes.post
- * @function
- * @param {Object} req - the request which includes a JSON body with username/password as well as an 'admin' boolean (if not admin, will not be able to generate a token)
- * @param {Object} res - the response object containing status, message, and success boolean
- */
-apiRoutes.post('/create', function (req, res) {
-  User.findOne({
-    username: req.body.username
-  }, function (err, user) {
+apiRoutes.get('/family/:id/members', function (req, res) {
+  Family.findOne({
+    id: req.query.id
+  }, function (err, family) {
     if (err) throw err;
-    if (user) {
-      res.status(400).send({success: false, message: 'Registration failed. User already exists.'});
-    } else if (!user) {
-      var newUser = new User({
-        username: req.body.username,
-        password: req.body.password,
-        admin: true
+    if (!family) {
+      res.status(404).send({success: false, message: 'Family not found.'});
+    } else if (family) {
+      res.json(family.members);
+    }
+  });
+});
+
+apiRoutes.post('/family', function(req, res){
+  Family.findOne({
+    name: req.body.name
+  }, function (err, family) {
+    if (err) throw err;
+    if (family) {
+      res.status(400).send({success: false, message: 'Add family failed. Family ' + req.body.name + ' already exists.'});
+    } else {
+      const doc = new Family({
+        name: req.body.name,
+        isSingleMember: req.body.isSingleMember,
+        phoneNumber1: req.body.phoneNumber1,
+        phoneNumber2: req.body.phoneNumber2,
+        address: {
+          street1: req.body.address.street1,
+          street2: req.body.address.street2,
+          city: req.body.address.city,
+          state: req.body.address.state,
+          postalCode: req.body.address.postalCode,
+          country: req.body.address.country
+        },
+        members: req.body.members
       });
-      newUser.save(function (err) {
+      doc.save(function (err) {
         if (err) throw err;
-        console.log('User ' + newUser.username + ' saved successfully');
-        res.json({success: true});
+        console.log('Family ' + doc.name + ' saved successfully');
+        res.json(doc);
       });
+    }
+  })
+});
+
+apiRoutes.put('/family/:id/member', function(req, res){
+  Family.findByIdAndUpdate(req.params.id,
+      {$push: {"members": req.body.memberId}},
+      {safe: true, upsert: true},
+      function(err, family) {
+        if(err){
+          res.send(err);
+        }
+        res.json(family);
+      });
+});
+
+apiRoutes.put('/family/:memberId/member', function(req, res){
+  Family.findOneAndUpdate({name: req.params.name}, req.body, function(err, family) {
+    if(err){
+      res.send(err);
+    }
+    res.json(family);
+  })
+});
+
+apiRoutes.put('/family/:id/name', function(req, res){
+  const doc = { name: req.body.name };
+  Family.update({_id: req.params.id}, doc, function(err, family) {
+    if(err){
+      res.send(err);
+    }
+    res.json(family);
+  });
+});
+
+apiRoutes.put('/family/:id/address', function(req, res){
+  const doc = { address: {
+    street1: req.body.street1,
+    street2: req.body.street2,
+    city: req.body.city,
+    state: req.body.state,
+    postalCode: req.body.postalCode,
+    country: req.body.country
+  }};
+  Family.update({_id: req.params.id}, doc, function(err, family) {
+    if(err){
+      res.send(err);
+    }
+    res.json(family);
+  });
+});
+
+apiRoutes.delete('/family/:id', function(req, res){
+  Family.remove({_id: req.params.id}, function(err) {
+    if(err){
+      res.send(err);
+    }
+    res.json({success: true});
+  });
+});
+
+apiRoutes.get('/member', function(req, res){
+  Member.find({}, function (err, members) {
+    res.json(members);
+  });
+});
+
+apiRoutes.get('/member/:id', function(req, res){
+  Member.findOne({
+    id: req.query.id
+  }, function (err, member) {
+    if (err) throw err;
+    if (!member) {
+      res.status(404).send({success: false, message: 'Member not found.'});
+    } else if (member) {
+      res.json(member);
     }
   });
 });
 
-/**
- * @name <b> authenticated function </b> - All routes below will need to be authenticated by including a generated token in the post body, query parameter, or header (x-access-token).
- * apiRoutes.use
- * @function
- * @param {Object} req - the request which includes a JSON body which can contain the auth token
- * @param {Object} res - the response object containing status, message, and success boolean
- * @param next - the function to execute upon successful authentication
- */
-apiRoutes.use(function (req, res, next) {
-  var token = req.body.token || req.query.token || req.headers['x-access-token'];
-  if (token) {
-    jwt.verify(token, app.get('superSecret'), function (err, decoded) {
-      if (err) {
-        return res.json({success: false, message: 'Failed to authenticate token.'});
-      } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded;
-        next();
-      }
-    });
-  } else {
-    return res.status(403).send({
-      success: false,
-      message: 'No token provided.'
-    });
-  }
+apiRoutes.post('/member', function(req, res){
+  Member.findOne({
+    firstName: req.body.firstName,
+    lastName: req.body.lastName
+  }, function (err, member) {
+    if (err) throw err;
+    if (member) {
+      res.status(400).send({success: false, message: 'Add Member failed. Member ' + req.body.firstName + ' ' + req.body.lastName + ' already exists.'});
+    } else {
+      const doc = new Member({
+        familyId: req.body.familyId,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        profilePic: req.body.profilePic,
+        hasFacebook: req.body.hasFacebook,
+        facebookLink: req.body.facebookLink,
+        isParent: req.body.isParent,
+        userName: req.body.userName,
+        password: req.body.password
+      });
+      doc.save(function (err) {
+        if (err) throw err;
+        console.log('Member ' + doc.firstName + ' ' + doc.lastName + ' saved successfully');
+        res.json(doc);
+      });
+    }
+  })
 });
 
-/**
- * @name <b> /users </b> - The users route will return a list of the users in the database.
- * apiRoutes.get
- * @function
- * @param {Object} req - the request which includes a JSON body
- * @param {Object} res - the response object containing status, message, and success boolean
- */
-apiRoutes.get('/users', function (req, res) {
-  User.find({}, function (err, users) {
-    res.json(users);
+apiRoutes.put('/member/:id', function(req, res){
+  Member.findOneAndUpdate({_id: req.params.id}, req.body, function(err, member) {
+    if(err){
+      res.send(err);
+    }
+    res.json(member);
+  })
+});
+
+apiRoutes.delete('/member/:id', function(req, res){
+  Member.remove({_id: req.params.id}, function(err) {
+    if(err){
+      res.send(err);
+    }
+    res.json({success: true});
+  })
+});
+
+apiRoutes.get('/draw', function(req, res){
+  Draw.find({}, function (err, draws) {
+    res.json(draws);
   });
+});
+
+apiRoutes.get('/draw/:year', function(req, res){
+  Draw.findOne({
+    year: req.params.year
+  }, function (err, draw) {
+    if (err) throw err;
+    if (!draw) {
+      res.status(404).send({success: false, message: 'Draw not found for ' + req.body.year});
+    } else if (draw) {
+      res.json(draw);
+    }
+  });
+});
+
+function generateDraw(givers, receivers) {
+  // Rules: Family can't buy for itself,
+  // Families can't buy for each other,
+  // All givers must have a receiver
+  // Stretch goal would be to have no triangulation, i.e. a -> b, b -> c, c -> a not allowed
+  let generate = true;
+  let matches = {};
+  while (generate) {
+    givers = randomlySortArray(givers);
+    receivers = randomlySortArray(receivers);
+    for (let i = 0; i < receivers.length; i++) {
+      const giver = givers[i];
+      matches[giver] = receivers[i];
+    }
+    let needSwap = [];
+    Object.keys(matches).forEach((key) => { //O(N)
+      const value = matches[key];
+      if (value == key || matches[value] == key) {
+        needSwap.push({key, value});
+      }
+    });
+    generate = needSwap.length > 0
+  }
+  let matchArray = [];
+  Object.keys(matches).forEach((key) => {
+    const value = matches[key];
+    matchArray.push({giverId: key, receiverId: value})
+  });
+  return {
+    matches: matchArray
+  }
+}
+
+function randomlySortArray(array) {
+  let currentIndex = array.length, temporaryValue, randomIndex;
+  // While there remain elements to shuffle
+  while (0 !== currentIndex) {
+    // Pick a remaining element
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    // And swap it with the current element
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+  return array;
+}
+
+apiRoutes.post('/generate-draw', function(req, res){
+  Draw.findOne({
+    year: req.body.year
+  }, function (err, draw) {
+    if (err) throw err;
+    if (draw) {
+      res.status(400).send({success: false, message: 'Add Draw failed. Draw ' + req.body.year + ' already exists.'});
+    } else {
+      const newDraw = generateDraw(req.body.givers, req.body.receivers);
+      const doc = new Draw({
+        year: req.body.year,
+        participantCount: newDraw.matches.size,
+        matches: newDraw.matches
+      });
+      doc.save(function (err) {
+        if (err) throw err;
+        console.log('Draw ' + doc.year + ' saved successfully');
+        res.json(doc);
+      });
+    }
+  })
+});
+
+apiRoutes.delete('/draw/:year', function(req, res){
+  Draw.remove({year: req.params.year}, function(err) {
+    if(err){
+      res.send(err);
+    }
+    res.json({success: true});
+  })
+});
+
+apiRoutes.get('/match', function(req, res){
+  Match.find({}, function (err, draws) {
+    res.json(draws);
+  });
+});
+
+apiRoutes.get('/match/:id', function(req, res){
+  Match.findOne({
+    id: req.query.id
+  }, function (err, match) {
+    if (err) throw err;
+    if (!match) {
+      res.status(404).send({success: false, message: 'Match not found.'});
+    } else if (match) {
+      res.json(match);
+    }
+  });
+});
+
+apiRoutes.get('/match/:giverId', function(req, res){
+  Match.findOne({
+    giverId: req.query.giverId
+  }, function (err, match) {
+    if (err) throw err;
+    if (!match) {
+      res.status(404).send({success: false, message: 'No Match found for giver' + req.query.giverId});
+    } else if (match) {
+      res.json(match.receiverId);
+    }
+  });
+});
+
+apiRoutes.get('/match/:receiverId', function(req, res){
+  Match.findOne({
+    receiverId: req.query.receiverId
+  }, function (err, match) {
+    if (err) throw err;
+    if (!match) {
+      res.status(404).send({success: false, message: 'No Match found for giver' + req.query.receiverId});
+    } else if (match) {
+      res.json(match.giverId);
+    }
+  });
+});
+
+apiRoutes.delete('/match', function(req, res){
+  Match.remove({_id: req.params.id}, function(err) {
+    if(err){
+      res.send(err);
+    }
+    res.json({success: true});
+  })
 });
 
 app.use('/api', apiRoutes);
