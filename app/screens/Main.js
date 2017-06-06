@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TabViewAnimated, TabBar } from 'react-native-tab-view';
-import Family from './Family'
+import Family from '../components/Family'
 import SavedListsScreen from './SavedListsScreen'
 
 const styles = StyleSheet.create({

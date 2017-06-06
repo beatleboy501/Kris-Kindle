@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Login from './app/components/login/Login.js';
+import Main from './app/screens/Main.js';
 import { AppRegistry, View, StyleSheet, Text } from 'react-native';
 
 export default class kris_kindle extends Component {
@@ -10,7 +10,7 @@ export default class kris_kindle extends Component {
 
   render() {
     return (
-        <Login></Login>
+        <Main></Main>
     );
   }
 }

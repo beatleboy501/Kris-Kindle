@@ -5,7 +5,7 @@ import Icon from '../../../node_modules/react-native-vector-icons/FontAwesome';
 import LoginContainer from './LoginContainer.js'
 import LoginButton from './LoginButton.js'
 import LoginLabel from './LoginLabel.js'
-import Main from '../Main.js'
+import Main from '../../screens/Main.js'
 
 export default class Login extends Component {
   constructor(props) {

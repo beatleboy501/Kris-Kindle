@@ -1,31 +1,31 @@
 /** @module Server */
 
 /** The express framework is used for routing in this node app */
-var express = require('express');
-var apiRoutes = express.Router();
-var app = express();
+const express = require('express');
+let apiRoutes = express.Router();
+let app = express();
 
 /** Body parsing middleware.
  * Parse incoming request bodies in a middleware before the handlers,
  * available under the <i>req.body</i> property. */
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 /** Morgan is a HTTP request logger middleware for node */
-var morgan = require('morgan');
+const morgan = require('morgan');
 /** Mongoose is a MongoDB object modeling tool */
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 /** Unirest is a set of lightweight HTTP libraries */
-var unirest = require('unirest');
+const unirest = require('unirest');
 /** JSON Web Token (JWT) is a compact URL-safe means of representing claims to be transferred between two parties.  */
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 /** The app configuration */
-var config = require('./config');
+const config = require('./config');
 /** The port used. Default is 8080 */
-var port = process.env.PORT || 8080;
+const port = process.env.PORT || 8080;
 /** Our Models */
-var Family = require('./app/models/family');
-var Member = require('./app/models/member');
-var Draw = require('./app/models/draw');
-var Match = require('./app/models/match');
+const Family = require('./models/family');
+const Member = require('./models/member');
+const Draw = require('./models/draw');
+const Match = require('./models/match');
 
 mongoose.connect(config.database);
 
@@ -39,13 +39,13 @@ app.use('/app/assets/javascripts', express.static('app/assets/javascripts'));
 
 /** API routes */
 
-apiRoutes.get('/family', function(req, res){
+apiRoutes.get('/family', (req, res) =>{
   Family.find({}, function (err, families) {
     res.json(families);
   });
 });
 
-apiRoutes.get('/family/:id', function (req, res) {
+apiRoutes.get('/family/:id', (req, res) =>{
   Family.findOne({
     id: req.query.id
   }, function (err, family) {
@@ -58,7 +58,7 @@ apiRoutes.get('/family/:id', function (req, res) {
   });
 });
 
-apiRoutes.get('/family/:id/members', function (req, res) {
+apiRoutes.get('/family/:id/members', (req, res) =>{
   Family.findOne({
     id: req.query.id
   }, function (err, family) {
@@ -71,7 +71,7 @@ apiRoutes.get('/family/:id/members', function (req, res) {
   });
 });
 
-apiRoutes.post('/family', function(req, res){
+apiRoutes.post('/family', (req, res) =>{
   Family.findOne({
     name: req.body.name
   }, function (err, family) {
@@ -103,7 +103,7 @@ apiRoutes.post('/family', function(req, res){
   })
 });
 
-apiRoutes.put('/family/:id/member', function(req, res){
+apiRoutes.put('/family/:id/member', (req, res) =>{
   Family.findByIdAndUpdate(req.params.id,
       {$push: {"members": req.body.memberId}},
       {safe: true, upsert: true},
@@ -115,7 +115,7 @@ apiRoutes.put('/family/:id/member', function(req, res){
       });
 });
 
-apiRoutes.put('/family/:memberId/member', function(req, res){
+apiRoutes.put('/family/:memberId/member', (req, res) =>{
   Family.findOneAndUpdate({name: req.params.name}, req.body, function(err, family) {
     if(err){
       res.send(err);
@@ -124,9 +124,9 @@ apiRoutes.put('/family/:memberId/member', function(req, res){
   })
 });
 
-apiRoutes.put('/family/:id/name', function(req, res){
+apiRoutes.put('/family/:id/name', (req, res) =>{
   const doc = { name: req.body.name };
-  Family.update({_id: req.params.id}, doc, function(err, family) {
+  Family.update({_id: req.params.id}, doc, (err, family) =>{
     if(err){
       res.send(err);
     }
@@ -134,7 +134,7 @@ apiRoutes.put('/family/:id/name', function(req, res){
   });
 });
 
-apiRoutes.put('/family/:id/address', function(req, res){
+apiRoutes.put('/family/:id/address', (req, res) =>{
   const doc = { address: {
     street1: req.body.street1,
     street2: req.body.street2,
@@ -143,7 +143,7 @@ apiRoutes.put('/family/:id/address', function(req, res){
     postalCode: req.body.postalCode,
     country: req.body.country
   }};
-  Family.update({_id: req.params.id}, doc, function(err, family) {
+  Family.update({_id: req.params.id}, doc, (err, family) =>{
     if(err){
       res.send(err);
     }
@@ -151,8 +151,8 @@ apiRoutes.put('/family/:id/address', function(req, res){
   });
 });
 
-apiRoutes.delete('/family/:id', function(req, res){
-  Family.remove({_id: req.params.id}, function(err) {
+apiRoutes.delete('/family/:id', (req, res) =>{
+  Family.remove({_id: req.params.id}, err =>{
     if(err){
       res.send(err);
     }
@@ -160,16 +160,16 @@ apiRoutes.delete('/family/:id', function(req, res){
   });
 });
 
-apiRoutes.get('/member', function(req, res){
-  Member.find({}, function (err, members) {
+apiRoutes.get('/member', (req, res) =>{
+  Member.find({}, (err, members) =>{
     res.json(members);
   });
 });
 
-apiRoutes.get('/member/:id', function(req, res){
+apiRoutes.get('/member/:id', (req, res) =>{
   Member.findOne({
     id: req.query.id
-  }, function (err, member) {
+  }, (err, member) =>{
     if (err) throw err;
     if (!member) {
       res.status(404).send({success: false, message: 'Member not found.'});
@@ -179,11 +179,11 @@ apiRoutes.get('/member/:id', function(req, res){
   });
 });
 
-apiRoutes.post('/member', function(req, res){
+apiRoutes.post('/member', (req, res) =>{
   Member.findOne({
     firstName: req.body.firstName,
     lastName: req.body.lastName
-  }, function (err, member) {
+  }, (err, member) =>{
     if (err) throw err;
     if (member) {
       res.status(400).send({success: false, message: 'Add Member failed. Member ' + req.body.firstName + ' ' + req.body.lastName + ' already exists.'});
@@ -199,7 +199,7 @@ apiRoutes.post('/member', function(req, res){
         userName: req.body.userName,
         password: req.body.password
       });
-      doc.save(function (err) {
+      doc.save(err =>{
         if (err) throw err;
         console.log('Member ' + doc.firstName + ' ' + doc.lastName + ' saved successfully');
         res.json(doc);
@@ -208,8 +208,8 @@ apiRoutes.post('/member', function(req, res){
   })
 });
 
-apiRoutes.put('/member/:id', function(req, res){
-  Member.findOneAndUpdate({_id: req.params.id}, req.body, function(err, member) {
+apiRoutes.put('/member/:id', (req, res) =>{
+  Member.findOneAndUpdate({_id: req.params.id}, req.body, (err, member) =>{
     if(err){
       res.send(err);
     }
@@ -217,8 +217,8 @@ apiRoutes.put('/member/:id', function(req, res){
   })
 });
 
-apiRoutes.delete('/member/:id', function(req, res){
-  Member.remove({_id: req.params.id}, function(err) {
+apiRoutes.delete('/member/:id', (req, res) =>{
+  Member.remove({_id: req.params.id}, err =>{
     if(err){
       res.send(err);
     }
@@ -226,16 +226,16 @@ apiRoutes.delete('/member/:id', function(req, res){
   })
 });
 
-apiRoutes.get('/draw', function(req, res){
-  Draw.find({}, function (err, draws) {
+apiRoutes.get('/draw', (req, res) =>{
+  Draw.find({}, (err, draws) =>{
     res.json(draws);
   });
 });
 
-apiRoutes.get('/draw/:year', function(req, res){
+apiRoutes.get('/draw/:year', (req, res) =>{
   Draw.findOne({
     year: req.params.year
-  }, function (err, draw) {
+  }, (err, draw) =>{
     if (err) throw err;
     if (!draw) {
       res.status(404).send({success: false, message: 'Draw not found for ' + req.body.year});
@@ -262,7 +262,7 @@ function generateDraw(givers, receivers) {
     let needSwap = [];
     Object.keys(matches).forEach((key) => { //O(N)
       const value = matches[key];
-      if (value == key || matches[value] == key) {
+      if (value === key || matches[value] === key) {
         needSwap.push({key, value});
       }
     });
@@ -293,10 +293,10 @@ function randomlySortArray(array) {
   return array;
 }
 
-apiRoutes.post('/generate-draw', function(req, res){
+apiRoutes.post('/generate-draw', (req, res) =>{
   Draw.findOne({
     year: req.body.year
-  }, function (err, draw) {
+  }, (err, draw) =>{
     if (err) throw err;
     if (draw) {
       res.status(400).send({success: false, message: 'Add Draw failed. Draw ' + req.body.year + ' already exists.'});
@@ -307,7 +307,7 @@ apiRoutes.post('/generate-draw', function(req, res){
         participantCount: newDraw.matches.size,
         matches: newDraw.matches
       });
-      doc.save(function (err) {
+      doc.save(err =>{
         if (err) throw err;
         console.log('Draw ' + doc.year + ' saved successfully');
         res.json(doc);
@@ -316,8 +316,8 @@ apiRoutes.post('/generate-draw', function(req, res){
   })
 });
 
-apiRoutes.delete('/draw/:year', function(req, res){
-  Draw.remove({year: req.params.year}, function(err) {
+apiRoutes.delete('/draw/:year', (req, res) =>{
+  Draw.remove({year: req.params.year}, err =>{
     if(err){
       res.send(err);
     }
@@ -325,16 +325,16 @@ apiRoutes.delete('/draw/:year', function(req, res){
   })
 });
 
-apiRoutes.get('/match', function(req, res){
-  Match.find({}, function (err, draws) {
+apiRoutes.get('/match', (req, res) =>{
+  Match.find({}, (err, draws) =>{
     res.json(draws);
   });
 });
 
-apiRoutes.get('/match/:id', function(req, res){
+apiRoutes.get('/match/:id', (req, res) =>{
   Match.findOne({
     id: req.query.id
-  }, function (err, match) {
+  }, (err, match) =>{
     if (err) throw err;
     if (!match) {
       res.status(404).send({success: false, message: 'Match not found.'});
@@ -344,10 +344,10 @@ apiRoutes.get('/match/:id', function(req, res){
   });
 });
 
-apiRoutes.get('/match/:giverId', function(req, res){
+apiRoutes.get('/match/:giverId', (req, res) =>{
   Match.findOne({
     giverId: req.query.giverId
-  }, function (err, match) {
+  }, (err, match) =>{
     if (err) throw err;
     if (!match) {
       res.status(404).send({success: false, message: 'No Match found for giver' + req.query.giverId});
@@ -357,10 +357,10 @@ apiRoutes.get('/match/:giverId', function(req, res){
   });
 });
 
-apiRoutes.get('/match/:receiverId', function(req, res){
+apiRoutes.get('/match/:receiverId', (req, res) =>{
   Match.findOne({
     receiverId: req.query.receiverId
-  }, function (err, match) {
+  }, (err, match) =>{
     if (err) throw err;
     if (!match) {
       res.status(404).send({success: false, message: 'No Match found for giver' + req.query.receiverId});
@@ -370,8 +370,8 @@ apiRoutes.get('/match/:receiverId', function(req, res){
   });
 });
 
-apiRoutes.delete('/match', function(req, res){
-  Match.remove({_id: req.params.id}, function(err) {
+apiRoutes.delete('/match', (req, res) =>{
+  Match.remove({_id: req.params.id}, err =>{
     if(err){
       res.send(err);
     }

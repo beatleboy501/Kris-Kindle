@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AppRegistry, View, StyleSheet, Text } from 'react-native';
-import Button from './Button'
+import Button from '../components/Button'
 import MemberListScreen from './MemberListScreen'
 import AddMemberScreen from './AddMemberScreen'
 import RemoveMemberScreen from './RemoveMemberScreen'

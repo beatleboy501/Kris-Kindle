@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navigator, AppRegistry, View, StyleSheet, Text, TouchableHighlight} from 'react-native';
-import FamilyMembersScreen from './FamilyMembersScreen.js';
+import FamilyMembersScreen from '../screens/FamilyMembersScreen.js';
 import Button from './Button.js';
 
 export default class Family extends Component {
@@ -22,18 +22,30 @@ export default class Family extends Component {
 
   render() {
 
-    var NavigationBarRouteMapper = {
+    let NavigationBarRouteMapper = {
       LeftButton(route, navigator, index, navState) {
-        if(index > 0){
-          return(
-            <Button
-                label="Back"
-                style={{backgroundColor: 'white',verticalAlign: 'bottom', flex: 1, justifyContent: 'center', alignItems: 'center'}}
-                onPress={() => { if (index > 0) { navigator.pop() } }}>
-            </Button>
+        if (index > 0) {
+          return (
+              <Button
+                  label="Back"
+                  style={{
+                    backgroundColor: 'white',
+                    verticalAlign: 'bottom',
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }}
+                  onPress={() => {
+                    if (index > 0) {
+                      navigator.pop()
+                    }
+                  }}>
+              </Button>
           )
         }
-        else { return null }
+        else {
+          return null
+        }
       },
       RightButton(route, navigator, index, navState) {
         if (route.onPress) return (

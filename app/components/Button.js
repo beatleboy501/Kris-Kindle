@@ -6,7 +6,7 @@ import {
     paddingVertical,
     paddingHorizontal,
     borderRadius,
-} from '../../styles';
+} from '../styles/index';
 
 const stylesheet = StyleSheet.create({
   view: {
