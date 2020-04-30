@@ -20,7 +20,7 @@
     "growl": "^1.10.5",
     "history": "^4.6.1",
     "jest": "^19.0.2",
-    "jquery": "^3.2.1",
+    "jquery": "^3.5.0",
     "jsdoc": "^3.4.3",
     "json-loader": "^0.5.4",
     "jsonwebtoken": "^8.5.1",
